@@ -32,7 +32,9 @@ FEATURE_ENGINEERING = {
         "rsi",
         "macd",
         "volatility"
-    ]
+    ],
+    "target_threshold": 0.005,   # 0.5% move for buy/sell
+    "include_target": True       # whether to add a target column to equity_features
 }
 
 # Evaluation Module config
