@@ -23,25 +23,24 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from typing import Optional
-
-DEFAULT_DB_PATH = "db/market_data.db"
+from config import DB_PATH
 
 
 # -----------------------
 # Helpers
 # -----------------------
-def _load_price_data_from_db(db_path: str = DEFAULT_DB_PATH) -> pd.DataFrame:
+def _load_price_data_from_db(db_path: str = DB_PATH) -> pd.DataFrame:
     """Load OHLC price data from the equities table in SQLite db."""
     conn = sqlite3.connect(db_path)
     try:
-        df = pd.read_sql_query("SELECT ticker, date, open, high, low, close, adj_close, volume FROM equities", conn)
+        df = pd.read_sql_query("SELECT ticker, date, open, high, low, close, volume FROM equities", conn)
     finally:
         conn.close()
     if df.empty:
         return df
     df['date'] = pd.to_datetime(df['date'])
     # ensure numeric
-    for c in ['open', 'high', 'low', 'close', 'adj_close', 'volume']:
+    for c in ['open', 'high', 'low', 'close', 'volume']:
         if c in df.columns:
             df[c] = pd.to_numeric(df[c], errors='coerce')
     return df
@@ -73,7 +72,7 @@ def _row_for_date(df_ticker: pd.DataFrame, date: pd.Timestamp) -> Optional[pd.Se
 def evaluate_trades(
     trades_df: pd.DataFrame,
     price_df: pd.DataFrame = None,
-    db_path: str = DEFAULT_DB_PATH,
+    db_path: str = DB_PATH,
     portfolio_limit: int = 5,
     per_trade_amount: Optional[float] = None,
     default_units: float = 1.0,
